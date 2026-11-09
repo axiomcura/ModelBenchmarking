@@ -43,9 +43,11 @@ products stay in the bucket.
 
 ## Things to know
 
-* **⚠️ Normalization version.** The project history reports that normalization errors were found on 09/23/2026 and
-  that the datasets were re-normalized (`*_0922_normed.parquet`). That code is not in this repository. Notebook 1.1
-  contains the earlier method, whose outputs are used by Steps 3, 4.1 and 4.2.
+* **⚠️ Normalization version.** The original repository reports that normalization errors were found on 09/23/2026,
+  that all morphological datasets were re-normalized (`*_0922_normed.parquet`) and that the earlier files were
+  deprecated. The re-normalization code is in neither repository. Notebook 1.1 contains the earlier method. Its
+  outputs are still in the bucket and are read by Steps 1.2, 3, 4.1 and 4.2. Step 4.3 reads the re-normalized
+  files.
 * **⚠️ Plate-level effects remain.** Notebook 1.1 estimates the DMSO median, the median absolute deviation and the
   sphering matrix once over all DMSO wells and applies the same transform to every well. A global transform cannot
   remove plate or batch offsets. These offsets therefore remain in the normalized files and influence the activity

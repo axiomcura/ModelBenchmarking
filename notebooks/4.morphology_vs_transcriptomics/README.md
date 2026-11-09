@@ -71,8 +71,14 @@ belong in this step's `results/` folder. Downloaded Parquet caches are temporary
 * **Execution-order problems.** In 4.1, Part 4 uses the 5,000 most variable genes when the notebook runs in order,
   because Part 3 redefines `drugseq_features`. In 4.2, Parts 4–5 are copies of 4.1 and were not adapted to the
   factor-based pipeline; Part 4 stops with a `KeyError` because it reads the 4.1 column `SVCCA Mean (AUC)`.
-* **⚠️ 4.3 reference data.** The reference of the saved run (`cpb_observed_molecules_lpm_latents-extra.parquet`) has
-  no documented origin. The `cpb_latent_all` option is the Step 0.5 file generated with an untrained network.
+* **⚠️ 4.3 reference data.** The reference of the saved run (`cpb_observed_molecules_lpm_latents-extra.parquet`)
+  holds ChemPerturb-Bridge latents of the molecules observed by the model, described as "in distribution" in the
+  original repository. It was created on 09/25/2026, and its generating code is in neither repository. Whether these
+  latents come from a trained model is unconfirmed. The `cpb_latent_all` option is a different file: the Step 0.5
+  projection of all JUMP compounds, generated with an untrained network.
+* **Two generations of morphological profiles.** Notebooks 4.1 and 4.2 read the earlier normalized profiles, which
+  the original author has deprecated. Notebook 4.3 reads the profiles re-normalized on 09/22/2026. A different
+  ranking in 4.3 can therefore come from the transcriptomic reference or from the normalization.
 * **4.3 saved outputs** come from the draft notebook that 4.3 replaces (reference `cpb_latent_distr`, PCA retaining
   99% of the variance, a +3σ significance threshold, pairwise cohorts, FastICA). Part 4 has no saved output: the
   draft's output came from an older session and used incorrect InChIKeys, which are corrected in 4.3.

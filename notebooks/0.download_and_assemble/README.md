@@ -31,6 +31,11 @@ Git ignores both locations and tracks only their README inventories.
   random projection of chemical fingerprints and carry no learned perturbation information. No saved analysis uses
   this file. Step 4.3 can select it as the reference `cpb_latent_all`; avoid this until the file is regenerated with
   trained weights.
+* **A second ChemPerturb-Bridge file exists.** `cpb_observed_molecules_lpm_latents-extra.parquet` holds latents of
+  the molecules observed by the model and is the reference of the saved Step 4.3 run. It was created on 09/25/2026,
+  one week after the Step 0.5 product, and covers a few thousand compounds. Notebook 0.5 does not produce it, and
+  its generating code is in neither this repository nor the original one. The warning above concerns only the
+  Step 0.5 product, whose copy in the bucket has been unchanged since 09/18/2026.
 * **Chemical Checker sign2 and sign3.** sign2 is derived from experimental data and is missing for many compounds.
   sign3 is predicted by a neural network for every molecule and is complete.
 * **Well-level profiles.** The morphological tables (0.3, 0.4) contain one row per well. A compound usually occupies

@@ -51,7 +51,7 @@ Each step folder has its own README with details, and each notebook explains its
 | **MiniMol** | chemical structure and molecular properties | graph-neural-network molecular embedding pretrained on molecular property and bioassay data (512-d) | Kläser *et al.*, 2024 |
 | **Chemical Checker** sign2 / sign3 | bioactivity | 25 signature spaces organized in five levels from chemistry to clinics, 3,200-d | Duran-Frigola *et al.*, 2020; Bertoni *et al.*, 2021 |
 | **Novartis DRUG-seq** | transcriptional profile | U2OS cells, 3,755 compounds at 4 doses (0.01–10 µM), a single 24 h time point, 14,370 genes | Novartis (DRUG-seq: Ye *et al.*, 2018) |
-| **ChemPerturb-Bridge** latent embeddings | predicted perturbation response | 256-d compound embeddings; an optional transcriptomic reference in Step 4.3 (⚠️ see Step 0.5 and the limitations below) | n/a |
+| **ChemPerturb-Bridge** latent embeddings | latent perturbation response | 256-d compound embeddings used as a transcriptomic reference in Step 4.3. Two files exist: latents of the molecules observed by the model (reference of the saved 4.3 run) and a projection of all JUMP compounds (Step 0.5, ⚠️ see the limitations below) | n/a |
 
 Compounds come from the [JUMP Cell Painting](https://jump-cellpainting.broadinstitute.org/) (JUMP-CP) dataset
 (Chandrasekaran *et al.*, 2023). Datasets are matched by **InChIKey**, a standard compound identifier derived from
@@ -205,15 +205,18 @@ its raw downloads are stored under `data/raw/`. Tables and figures exported by l
 | `Annotations_from_Roman/Bayer_data_harmonized/Bayer_DINO_embeddings/BAYER_DINO_embeddings_normed_final.parquet` | Bayer DINO, normalized, well level | 0.3 |
 | `embeddings/JUMP_Bayer_compounds/OpenPhenom/parquets/openphenom_{384,1920}.parquet` | OpenPhenom, raw, well level | 0.4 |
 | `embeddings/ChemPerturb-Bridge/latent_perturbation_embeddings/jump_cp_latent_perturbation_embeddings.parquet` | ⚠️ generated with an **untrained** encoder; see Step 0.5 | 0.5 |
-| `embeddings/JUMP_Bayer_compounds/OpenPhenom/parquets/openphenom_{384,1920}_sphered_mad_robustized.parquet` | OpenPhenom, normalized | 1.1 |
-| `embeddings/JUMP_Bayer_compounds/OpenPhenom/parquets/openphenom_{384,1920}_sphered_mad_robustized-ACTIVE.parquet` | OpenPhenom, normalized, phenotypically active wells | 1.2 |
-| `Annotations_from_Roman/Bayer_data_harmonized/Bayer_DINO_embeddings/Bayer_DINO_embeddings_normed_final-actives_only.parquet` | Bayer DINO, normalized, phenotypically active wells | 1.2 ² |
+| `embeddings/JUMP_Bayer_compounds/OpenPhenom/parquets/openphenom_{384,1920}_sphered_mad_robustized.parquet` | OpenPhenom, normalized (earlier method ³) | 1.1 |
+| `embeddings/JUMP_Bayer_compounds/OpenPhenom/parquets/openphenom_{384,1920}_sphered_mad_robustized-ACTIVE.parquet` | OpenPhenom, normalized (earlier method ³), phenotypically active wells | 1.2 |
+| `Annotations_from_Roman/Bayer_data_harmonized/Bayer_DINO_embeddings/Bayer_DINO_embeddings_normed_final-actives_only.parquet` | Bayer DINO, normalized (earlier method ³), phenotypically active wells | 1.2 ² |
 | `embeddings/Novartis_DRUGseq_expression_data/novartis_drugseq_u2os_10uM_24h_normalized_factors.parquet` | DRUG-seq 10 µM / 24 h, 43 latent factors | 1.3 |
 | `Annotations_from_Roman/Bayer_data_harmonized/minimol_embeddings/minimol_clusters.csv` | MiniMol HDBSCAN clusters | 2 |
 | `Chemical_Checker_Embeddings/parquets/sign3_clusters.csv` (at the bucket root, outside `embeddings/`) | CC sign3 HDBSCAN clusters | 2 |
 
 ¹ Written to `Annotations_from_Roman/.../annotations_from_Roman/` and copied to this location outside the notebook.
 ² Produced by a different run of the Step 1.2 code; the saved code writes a file ending in `ACTIVE_ONLY-test2.parquet`.
+³ The original author re-normalized all morphological datasets on 09/22/2026 and deprecated the earlier files. The
+earlier files are still in the bucket (dated May 2026) and are the ones read by Steps 1.2, 3, 4.1 and 4.2. The same
+applies to `BAYER_DINO_embeddings_normed_final.parquet`.
 
 ### Inputs and files produced outside this repository
 
@@ -227,13 +230,16 @@ its raw downloads are stored under `data/raw/`. Tables and figures exported by l
 | `embeddings/CP-CNN/*.parquet`, `embeddings/Imagenet/*.parquet` | CP-CNN and ImageNet CNN embeddings | 4 |
 | `embeddings/JUMP MOA annotations/annotations_compound_gene_curated.parquet` | curated compound–gene (mechanism of action) annotations from the JUMP consortium | n/a |
 | `*_with_JUMPMOA.parquet`, `*_JUMP_MOA.parquet`, `*_with_MOA.parquet`, `sign3_big_clusters.csv`, `JUMP_CP_Global_Signatures_Clustered_Only.parquet` | datasets joined with mechanism-of-action labels, and additional clusterings | n/a |
-| `*_0922_normed.parquet`, `CP-CNN_JUMP-CP_9.22_normalized.parquet`, `Imagenet_JUMP-CP_9.22_normalized.parquet` | re-normalized morphological profiles (09/22/2026; see project history) | 4.3 |
-| `indexed_by_inchikey/*.parquet` | copies of the morphological profiles, DRUG-seq signatures and factors, and ChemPerturb-Bridge latents, harmonized to an InChIKey column | 4.3 |
-| `indexed_by_inchikey/cpb_observed_molecules_lpm_latents-extra.parquet` | ChemPerturb-Bridge latent embeddings of observed molecules; ⚠️ origin undocumented; reference of the saved 4.3 run | 4.3 |
+| `*_0922_normed.parquet`, `CP-CNN_JUMP-CP_9.22_normalized.parquet`, `Imagenet_JUMP-CP_9.22_normalized.parquet` | re-normalized morphological profiles (09/22/2026), which replace the earlier normalized files ³; the code is in neither repository | 4.3 |
+| `indexed_by_inchikey/*.parquet` (12 files, written 09/25/2026) | current versions of the morphological profiles, DRUG-seq signatures and factors, and ChemPerturb-Bridge latents, rewritten with an InChIKey column | 4.3 |
+| `indexed_by_inchikey/cpb_observed_molecules_lpm_latents-extra.parquet` | ChemPerturb-Bridge latents of the molecules observed by the model ("in distribution" in the original repository); created 09/25/2026; ⚠️ the code that produced it is in neither repository; reference of the saved 4.3 run | 4.3 |
+| `indexed_by_inchikey/jump_cp_latent_perturbation_embeddings.parquet` | ChemPerturb-Bridge projection of all JUMP compounds (the Step 0.5 product, re-indexed); ⚠️ untrained encoder; the `cpb_latent_all` option | 4.3 (option) |
 
 ## Code review and known limitations
 
-The analysis code was reviewed while the repository was reorganized. Issues that could silently produce wrong
+The notebooks originate from [cytodata/ModelBenchmarking](https://github.com/cytodata/ModelBenchmarking). This
+repository reorganizes them and moves their shared functions into a tested package. The analysis code was reviewed
+during this reorganization. Issues that could silently produce wrong
 results were fixed. Issues that require a scientific decision, or a re-run with data access, are documented.
 **Read [`docs/code_review.md`](docs/code_review.md) and [`docs/notebook_review.md`](docs/notebook_review.md) before
 interpreting or publishing results.** The main points are:
@@ -241,12 +247,17 @@ interpreting or publishing results.** The main points are:
 * **Model ranking is unresolved.** Differences between the top-ranked models are smaller than the changes caused by
   the choice of benchmark design or similarity metric (CKA or SVCCA), and no confidence intervals are reported.
 * **Data provenance.** Several Step 4 inputs are produced outside this repository, including every file read by 4.3
-  and the transcriptomic reference of its saved run. The ChemPerturb-Bridge embeddings of Step 0.5 were generated
-  with an untrained network.
+  and the transcriptomic reference of its saved run. Two ChemPerturb-Bridge files exist. The projection of all JUMP
+  compounds (Step 0.5) was generated with an untrained network, and its copy in the bucket has been unchanged since
+  09/18/2026. The latents of observed molecules, used by the saved 4.3 run, are a separate file whose generating code
+  is unavailable.
+* **Two generations of input files.** Steps 3, 4.1 and 4.2 read the earlier normalized profiles, which the original
+  author has deprecated. Step 4.3 reads the re-normalized profiles. Results from 4.3 therefore differ from 4.1 and
+  4.2 in both the transcriptomic reference and the normalization of the morphological profiles.
 * **Normalization.** Step 1.1 estimates the robust z-score and the sphering transform from DMSO wells pooled across
   all plates. Plate and batch effects therefore remain in the normalized OpenPhenom profiles. Standard practice
-  normalizes each plate to its own negative controls. The corrected normalization of 09/22/2026 is not in the
-  repository.
+  normalizes each plate to its own negative controls. The code of the 09/22/2026 re-normalization is unavailable,
+  so its method cannot be checked.
 * **Comparability.** Step 3 compares models on different compound sets, uses a single well per compound and keeps a
   model-specific subset of active compounds. The Step 4 pilot analyses (Part 1 of 4.1 and 4.2) treat each well as an
   independent sample, although replicate wells share one DRUG-seq profile.

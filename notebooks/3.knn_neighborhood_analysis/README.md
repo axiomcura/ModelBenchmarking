@@ -43,6 +43,9 @@ environment (see the main README).
 
 ## ⚠️ Read before interpreting
 
+* **Inputs use the earlier normalization.** The normalized and active-only profiles read here were produced before
+  the 09/22/2026 re-normalization and have since been deprecated by the original author. The saved results have not
+  been recomputed on the re-normalized profiles.
 * **Replicate wells are not aggregated.** For tables with several wells per compound, only the first well of each
   compound is used. This adds noise and mixes doses. Step 4 uses the median of all replicate wells, the usual
   consensus profile.
